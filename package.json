@@ -1,0 +1,38 @@
+{
+  "name": "better_deferred",
+  "version": "1.0.0",
+  "description": "Javascript library that truly defers the insertion of other Javascript libraries resulting in improved performance compared to using native defer or async.",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "npm run build && node dist/index.js",
+    "watch": "watch 'npm run start' ./src",
+    "build": "npm run build:clean && npm run build:lib",
+    "build:clean": "rm -rf dist",
+    "build:lib": "npx babel src --out-dir dist",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MrMurga/better_deferred.git"
+  },
+  "keywords": [
+    "javascript",
+    "defer",
+    "async",
+    "performance"
+  ],
+  "author": "Armando Murga",
+  "license": "https://github.com/MrMurga/better_deferred/blob/main/LICENSE",
+  "bugs": {
+    "url": "https://github.com/MrMurga/better_deferred/issues"
+  },
+  "homepage": "https://github.com/MrMurga/better_deferred#readme",
+  "devDependencies": {
+    "@babel/cli": "^7.13.10",
+    "@babel/core": "^7.13.10",
+    "@babel/preset-env": "^7.13.10"
+  },
+  "dependencies": {
+    "watch": "^1.0.2"
+  }
+}
