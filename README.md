@@ -4,6 +4,17 @@ Javascript library that truly defers the insertion of other Javascript libraries
 Inspiration from https://www.cybergrx.com/resources/research-and-insights/blog/how-to-create-a-barebones-production-ready-npm-package-with-babel-7
 
 
+# Working with the repo
+
+## Development
+```
+npm start
+```
+
 ```
 npm run watch
+```
+## Build
+```
+npm run build
 ```
