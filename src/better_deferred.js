@@ -1,12 +1,15 @@
-const $ = require( "jquery" );
-
 const INLINE = 'better_deferred_inline';
 const DEFERRED = 'better_deferred';
-const INIT_TIMEOUT = 4000;
+const INIT_TIMEOUT = 5000;
 const TIMEOUT = 200;
 
-const log = (s) => {
-    console.log(`[${new Date().getTime()} - ${s}`);
+const log = (s, level = 0) => {
+    let txt = `[${new Date().getTime()} - ${s}`;
+    if(level == 1) {
+        console.log(txt);
+    } else {
+        console.debug(txt);
+    }
 }
 
 const addScriptObjects = (self_obj, element) => {
@@ -18,48 +21,51 @@ const addScriptObjects = (self_obj, element) => {
     
     s.type = "text/javascript";
     s.src = element.src;
-    $('body').append(s);
+    document.body.appendChild(s);
 }
 
-const addInlineScripts = (element) => {
+const addInlineScriptObjects = (self_obj, element) => {
     log('Added inline script');
     var s = document.createElement("script");
     s.type = "text/javascript";
-    s.innerHTML = $(element).html();
-    $('body').append(s);
+    s.innerHTML = element.innerHTML;
+    document.body.appendChild(s);
+
+    setTimeout(() => {
+        log(`Loaded inline`);
+        self_obj.next(self_obj);
+    }, TIMEOUT);
 }
 
-const _setVariables = () => {
+const fetchBetterDeferred = () => {
     let queue = [];
-    let externalScripts = $("script[type=" + DEFERRED);
-    externalScripts.each((_index, element) => {
+    let externalScripts = document.querySelectorAll("script[type=" + DEFERRED);
+    externalScripts.forEach((element) => {
         queue.push(element);
     });
 
-    let inlineScripts = $("script[type=" + INLINE);
-    inlineScripts.each((_index, element) => {
+    let inlineScripts = document.querySelectorAll("script[type=" + INLINE);
+    inlineScripts.forEach((element) => {
         queue.push(element);
     });
 
-    log(`Found ${externalScripts.length} ext scripts, ${inlineScripts.length} inline scripts. Queue ${queue.length}`);
-
+    log(`Found ${externalScripts.length} ext scripts, ${inlineScripts.length} inline scripts. Queue ${queue.length}`, 1);
     return queue;
 };
 
 export class BetterDeferred {
     constructor() {
+        let self_obj = this;
         let callback = function () {
-            log('Starting');
-            this.queue = _setVariables();
+            this.queue = fetchBetterDeferred();
             this.next();
         };
         
-        $(document).ready(() => {
-            log('Prepping');
-            setTimeout((self) => {
-                callback.apply(self);
-            }, INIT_TIMEOUT, this);
-        })
+        document.addEventListener("DOMContentLoaded", function() {
+            setTimeout((self_obj) => {
+                callback.apply(self_obj);
+            }, INIT_TIMEOUT, self_obj);
+        });
     }
     
     getQueue() {
@@ -67,16 +73,17 @@ export class BetterDeferred {
     }
 
     next() {
-        let elem = this.getQueue().shift();
+        let elem = this.getQueue()?.shift();
         if (!elem) {
+            log('Complete', 1);
             return ;
         }
-        let inline = $(elem).attr('type') == INLINE;
+        let inline = elem.type == INLINE;
         log(`Another script processed. Remaining. ${this.getQueue().length} - inline? ${inline}`);
         if (!inline) {
             addScriptObjects(this, elem);
         } else {
-            addInlineScripts(elem);
+            addInlineScriptObjects(this, elem);
         }
     }
 }
