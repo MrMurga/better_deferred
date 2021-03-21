@@ -4,11 +4,11 @@
   "description": "Javascript library that truly defers the insertion of other Javascript libraries resulting in improved performance compared to using native defer or async.",
   "main": "src/index.js",
   "scripts": {
-    "start": "npm run build && node dist/index.js",
+    "start": "./node_modules/webpack/bin/webpack.js ./src/index.js --output-filename=bundle.js --mode=development",
     "watch": "watch 'npm run start' ./src",
     "build": "npm run build:clean && npm run build:lib",
     "build:clean": "rm -rf dist",
-    "build:lib": "npx babel src --out-dir dist",
+    "build:lib": "./node_modules/webpack/bin/webpack.js ./src/index.js --output-filename=bundle.js --mode=production",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -28,11 +28,11 @@
   },
   "homepage": "https://github.com/MrMurga/better_deferred#readme",
   "devDependencies": {
-    "@babel/cli": "^7.13.10",
-    "@babel/core": "^7.13.10",
-    "@babel/preset-env": "^7.13.10"
+    "webpack": "^5.25.1",
+    "webpack-cli": "^4.5.0"
   },
   "dependencies": {
+    "jquery": "^3.6.0",
     "watch": "^1.0.2"
   }
 }

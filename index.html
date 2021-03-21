@@ -1,0 +1,19 @@
+<html>
+    <head>    
+        <script src="dist/bundle.js"></script>
+        
+        <script type="better_deferred" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+        <script type="better_deferred" src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/js/bootstrap.min.js"></script>
+
+        <script type="better_deferred_inline">
+            $(document).ready(function() {
+                console.log('done');
+                $('#loaded-status').text('done');
+            })
+        </script>
+    </head>
+
+    <body>
+        Status: <span id='loaded-status'>Loading...</div>
+    </body>
+</html>
