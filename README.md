@@ -19,6 +19,15 @@ The following scripts is executed after (document.ready + 5 seconds):
 ```
 
 External scripts are loaded first (in the order they appear), then inline scripts follow (in the order they appear).
+
+# Triggering early load of better_deferred scripts
+Any html element with the class better_deferred_trigger will be given a listener for mouse over, touch move, and focus; which will trigger the early load of better_deferred scripts once.
+
+Additionally, to early trigger manually you can call `window[window['_bd_name']].start()`.
+
+# Loaded scripts
+When scripts are loaded, they are given the type `better_deferred_*_loaded` and the bottom of the document will include a reciprocating script of type `text/javascript`.
+
 # Support for lozad
 A case I wanted to support is to load external scripts earlier if they become relevant to the user by detecting whether lozad has loaded related elements in the page.
 
