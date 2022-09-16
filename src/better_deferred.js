@@ -11,26 +11,46 @@ const log = (s, level = 0) => {
     }
 }
 
-const addScriptObjects = (element, callback = null) => {
-    log('Added script' + element.src);
-    var s = document.createElement("script");
+const decorate = (element, inline, callback = null) => {
+    var s = document.createElement("script");    
+    if (inline) {
+        s.innerHTML = element.innerHTML;
+    } else {
+        s.src = element.src;
+    }
     s.type = "text/javascript";
-    s.src = element.src;
     s.addEventListener("load", element.onload);
+    element.type = `${element.type}_loaded`
     document.body.appendChild(s);
-    element.type = 'loaded_deferred_loaded'
     callback?.call();
+}
+
+const addScriptObjects = (element, callback = null) => {
+    log('Added script ' + element.src);
+    decorate(element, false, callback);
 }
 
 const addInlineScriptObjects = (element, callback = null) => {
     log('Added inline script');
-    var s = document.createElement("script");
-    s.type = "text/javascript";
-    s.innerHTML = element.innerHTML;
-    s.addEventListener("load", element.onload);
-    document.body.appendChild(s);
-    element.type = 'loaded_better_deferred'
-    callback?.call();
+    decorate(element, true, callback);
+}
+
+const fastLoadObserver = (betterDeferredObj) => {
+    let elems = document.querySelectorAll(".better_deferred_trigger");
+    if (elems.length == 0) {
+        return ;
+    }
+
+    const trigger = () => { 
+        betterDeferredObj.start();
+    }
+
+    elems.forEach((element) => {
+        element.addEventListener("mouseover", trigger, { once: true });
+        element.addEventListener("touchmove", trigger, { once: true });
+        element.addEventListener("focus", trigger, { once: true });
+    });
+
 }
 
 const lozadObserver = () => {  
@@ -82,12 +102,12 @@ const loadScriptsFromQueue = (queue) => {
 
 const fetchBetterDeferred = (parent = document) => {
     let queue = [];
-    let externalScripts = parent.querySelectorAll("script[type=" + DEFERRED);
+    let externalScripts = parent.querySelectorAll("script[type=" + DEFERRED + "]");
     externalScripts.forEach((element) => {
         queue.push(element);
     });
 
-    let inlineScripts = parent.querySelectorAll("script[type=" + INLINE);
+    let inlineScripts = parent.querySelectorAll("script[type=" + INLINE + "]");
     inlineScripts.forEach((element) => {
         queue.push(element);
     });
@@ -100,18 +120,23 @@ let self = null;
 export class BetterDeferred {
     constructor(delay) {
         self = this;
-        let callback = function () {
-            this.queue = fetchBetterDeferred();
-            this.next();
-        };
-        
         document.addEventListener("DOMContentLoaded", function() {
-            lozadObserver.call();
+            fastLoadObserver(self);
+            lozadObserver();
             setTimeout(() => {
-                log("Loading deferred scripts", 1);
-                callback.apply(self);
+                self.start();
             }, delay);
         });
+    }
+
+    start() {
+        let callback = function () {
+            self.queue = fetchBetterDeferred();
+            self.next();
+        };
+        
+        log("Loading deferred scripts", 1);
+        callback.apply(self);
     }
     
     getQueue() {
