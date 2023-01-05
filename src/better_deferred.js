@@ -18,7 +18,7 @@ const decorate = (element, callback = null) => {
 
 const addScriptObjects = (element, callback = null) => {
     log('Added script ' + element.src);
-    decorate(element, false, callback);
+    decorate(element, callback);
 }
 
 const fastLoadObserver = (betterDeferredObj) => {
