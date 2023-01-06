@@ -37,6 +37,13 @@ For example, if an element to declare Calendly isn't visible yet, then I'd like 
 
 This library support addition of custom MIME types when the script is loaded. This defaults to `type="application/javascript"` this can be overridden by setting `data-mime-type` value. For example for ESM, the `type="module"` needs to be set, since this is deferred, this can be set as `data-mime-type="module` or any of the [JS IANA types](http://www.iana.org/assignments/media-types/media-types.xhtml).
 
+```
+<script type="better_deferred" data-mime-type="module">
+   import * as d3 from 'https://esm.run/d3';
+   console.log('esm module', d3);
+</script>
+```
+
 ## Customization
 By default inline scripts and external scripts will be
 ```
