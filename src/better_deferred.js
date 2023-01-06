@@ -1,4 +1,3 @@
-const INLINE = 'better_deferred_inline';
 const DEFERRED = 'better_deferred';
 const TIMEOUT = 200;
 
@@ -11,28 +10,15 @@ const log = (s, level = 0) => {
     }
 }
 
-const decorate = (element, inline, callback = null) => {
-    var s = document.createElement("script");    
-    if (inline) {
-        s.innerHTML = element.innerHTML;
-    } else {
-        s.src = element.src;
-    }
-    s.type = "text/javascript";
-    s.addEventListener("load", element.onload);
-    element.type = `${element.type}_loaded`
-    document.body.appendChild(s);
+const decorate = (element, callback = null) => {
+    element.type = element.dataset.mimeType ?? "text/javascript";
+    document.body.appendChild(element);
     callback?.call();
 }
 
 const addScriptObjects = (element, callback = null) => {
     log('Added script ' + element.src);
-    decorate(element, false, callback);
-}
-
-const addInlineScriptObjects = (element, callback = null) => {
-    log('Added inline script');
-    decorate(element, true, callback);
+    decorate(element, callback);
 }
 
 const fastLoadObserver = (betterDeferredObj) => {
@@ -41,7 +27,7 @@ const fastLoadObserver = (betterDeferredObj) => {
         return ;
     }
 
-    const trigger = () => { 
+    const trigger = () => {
         betterDeferredObj.start();
     }
 
@@ -53,7 +39,7 @@ const fastLoadObserver = (betterDeferredObj) => {
 
 }
 
-const lozadObserver = () => {  
+const lozadObserver = () => {
     let lozads = document.querySelectorAll(".lozad");
     if (lozads.length == 0) {
         return ;
@@ -73,48 +59,32 @@ const lozadObserver = () => {
             log(`Script in lozad will be loading now`, 1);
             let queue = fetchBetterDeferred(mutation.target);
             loadScriptsFromQueue(queue);
-            
+
             // Stop observing
-            observer.disconnect();  
+            observer.disconnect();
         }
     };
 
     // Create an observer instance linked to the callback function
     const observer = new MutationObserver(callback);
-    
+
     lozads.forEach((element) => {
         // Start observing the target node for configured mutations
         observer.observe(element, config);
     });
 }
 
-const loadScriptsFromQueue = (queue) => {
-    for(const elem of queue) {
-        let inline = elem.type == INLINE;
-        log(`Processing lozad script - inline? ${inline}`);
-        if (!inline) {
-            addScriptObjects(elem);
-        } else {
-            addInlineScriptObjects(elem);
-        }
-    }
-}
+const loadScriptsFromQueue = (queue) => queue.forEach((elem) => addScriptObjects(elem));
 
 const fetchBetterDeferred = (parent = document) => {
-    let queue = [];
-    let externalScripts = parent.querySelectorAll("script[type=" + DEFERRED + "]");
-    externalScripts.forEach((element) => {
-        queue.push(element);
-    });
+    const queue = Array.from(parent.querySelectorAll(`script[type^="${DEFERRED}"]`));
 
-    let inlineScripts = parent.querySelectorAll("script[type=" + INLINE + "]");
-    inlineScripts.forEach((element) => {
-        queue.push(element);
-    });
-
-    log(`Found ${externalScripts.length} ext scripts, ${inlineScripts.length} inline scripts. Queue ${queue.length}`, 1);
-    return queue;
-};
+    // Since we want to preserve the load order and load external scripts first and then inline scripts.
+    return [
+        ...queue.filter((elem) => elem.innerHTML === ''),
+        ...queue.filter((elem) => elem.innerHTML !== ''),
+    ];
+}
 
 let self = null;
 export class BetterDeferred {
@@ -134,11 +104,11 @@ export class BetterDeferred {
             self.queue = fetchBetterDeferred();
             self.next();
         };
-        
+
         log("Loading deferred scripts", 1);
         callback.apply(self);
     }
-    
+
     getQueue() {
         return this.queue;
     }
@@ -149,8 +119,7 @@ export class BetterDeferred {
             log('Complete', 1);
             return ;
         }
-        let inline = elem.type == INLINE;
-        log(`Another script processed. Remaining. ${this.getQueue().length} - inline? ${inline}`);
+        log(`Another script processed. Remaining. ${this.getQueue().length}`);
 
         let callback = () => {
             setTimeout(() => {
@@ -159,10 +128,6 @@ export class BetterDeferred {
             }, TIMEOUT);
         }
 
-        if (!inline) {
-            addScriptObjects(elem, callback);
-        } else {
-            addInlineScriptObjects(elem, callback);
-        }
+        addScriptObjects(elem, callback);
     }
 }
