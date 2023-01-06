@@ -9,7 +9,7 @@ Please note that not all scripts are a good candidate to defer. For example, jQu
 
 The following scripts is executed after (document.ready + 5 seconds):
 ```
-<script type="better_deferred" onload="console.log('loaded script');">
+<script type="better_deferred" onload="console.log('loaded inline script');">
    alert('loaded');
 </script>
 ```

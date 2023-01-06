@@ -6,8 +6,10 @@
         <script type="better_deferred" src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/js/bootstrap.min.js"></script>
 
         <script type="better_deferred">
+            console.log('better_deferred inline has been loaded');
+
             $(document).ready(function() {
-                console.log('done');
+                console.log('document.ready is done');
                 $('#loaded-status').text('done');
                 updateBackgroundForLozad();
             })
@@ -23,9 +25,19 @@
                 $('#loaded-lozad-status').text('done');
             }
         </script>
+
+        <script type="better_deferred" data-mime-type="module">
+            import * as d3 from 'https://esm.run/d3';
+            console.log('esm module', d3);
+            $('#loaded-status-esm').text('done [module=' + typeof(d3) + ']');
+        </script>
     </head>
 
     <body>
+        <div>
+            ESM module. Status: <span id='loaded-status-esm'>Loading...</span>
+        </div>
+
         <div>
             JS scripts. Status: <span id='loaded-status'>Loading...</span>
         </div>
