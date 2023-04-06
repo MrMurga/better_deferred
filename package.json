@@ -1,6 +1,6 @@
 {
   "name": "better_deferred",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Javascript library that truly defers the insertion of other Javascript libraries resulting in improved performance compared to using native defer or async.",
   "main": "src/index.js",
   "files": [
@@ -12,7 +12,7 @@
     "build": "npm run build:clean && npm run build:lib",
     "build:clean": "rm -rf dist",
     "build:lib": "./node_modules/webpack/bin/webpack.js ./src/index.js --output-filename=bundle.js --mode=production",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "npx playwright test"
   },
   "repository": {
     "type": "git",
@@ -31,6 +31,7 @@
   },
   "homepage": "https://github.com/MrMurga/better_deferred#readme",
   "devDependencies": {
+    "@playwright/test": "^1.32.2",
     "webpack": "^5.25.1",
     "webpack-cli": "^4.5.0"
   },
