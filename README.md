@@ -26,7 +26,7 @@ Any html element with the class better_deferred_trigger will be given a listener
 Additionally, to early trigger manually you can call `window[window['_bd_name']].start()`.
 
 # Loaded scripts
-When scripts are loaded, they are given the type `better_deferred_*_loaded` and the bottom of the document will include a reciprocating script of type `text/javascript`.
+When scripts are loaded, they are given the type `loaded_better_deferred` and the bottom of the document will include a reciprocating script of type `text/javascript`.
 
 # Support for lozad
 A case I wanted to support is to load external scripts earlier if they become relevant to the user by detecting whether lozad has loaded related elements in the page.
@@ -75,3 +75,17 @@ npm publish
 Inspiration from:
 - https://www.cybergrx.com/resources/research-and-insights/blog/how-to-create-a-barebones-production-ready-npm-package-with-babel-7
 - https://docs.npmjs.com/
+
+# Run tests locally
+Be sure to install all dependencies, then run tests:
+```
+npx playwright install --with-deps
+npm run test
+```
+
+# CI
+Currently this repo uses Github actions but you can run the tests locally using a Docker container:
+```
+docker run --rm -it $(docker build -q .)
+```
+
