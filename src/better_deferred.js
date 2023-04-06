@@ -1,4 +1,5 @@
 const DEFERRED = 'better_deferred';
+const DEFERRED_LOADED = 'loaded_better_deferred';
 const TIMEOUT = 200;
 
 const log = (s, level = 0) => {
@@ -11,9 +12,16 @@ const log = (s, level = 0) => {
 }
 
 const decorate = (element, callback = null) => {
-    element.type = element.dataset.mimeType ?? "text/javascript";
-    document.body.appendChild(element);
-    callback?.call();
+    const newElement = document.createElement('script')
+    var attrs = element?.attributes
+    for (const attr of attrs) {
+        newElement.setAttribute(attr.name, attr.value)
+    }
+    newElement.type = element.dataset.mimeType ?? "text/javascript"
+    newElement.innerHTML = element.innerHTML
+    document.body.appendChild(newElement)
+    element.type = DEFERRED_LOADED
+    callback?.call()
 }
 
 const addScriptObjects = (element, callback = null) => {
