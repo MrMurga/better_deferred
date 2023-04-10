@@ -17,7 +17,7 @@ const decorate = (element, callback = null) => {
         if (!attrs) {
             break;
         }
-        
+
         const newElement = document.createElement('script')
         for (const attr of attrs) {
             newElement.setAttribute(attr.name, attr.value)
@@ -137,7 +137,7 @@ export class BetterDeferred {
         if (!elem) {
             log('Complete', 1);
             return ;
-        }   
+        }
         log(`Another script processed. Remaining. ${this.getQueue().length}`);
 
         let callback = () => {
