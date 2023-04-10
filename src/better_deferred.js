@@ -12,16 +12,26 @@ const log = (s, level = 0) => {
 }
 
 const decorate = (element, callback = null) => {
-    const newElement = document.createElement('script')
-    var attrs = element?.attributes
-    for (const attr of attrs) {
-        newElement.setAttribute(attr.name, attr.value)
+    let attrs = element ? element.attributes : null
+    do {
+        if (!attrs) {
+            break;
+        }
+
+        const newElement = document.createElement('script')
+        for (const attr of attrs) {
+            newElement.setAttribute(attr.name, attr.value)
+        }
+        let newType = (element.dataset.mimeType ? element.dataset.mimeType : "text/javascript")
+        newElement.type = newType
+        newElement.innerHTML = element.innerHTML
+        document.body.appendChild(newElement)
+        element.type = DEFERRED_LOADED
+    } while(false)
+    
+    if (callback) {
+        callback.call()
     }
-    newElement.type = element.dataset.mimeType ?? "text/javascript"
-    newElement.innerHTML = element.innerHTML
-    document.body.appendChild(newElement)
-    element.type = DEFERRED_LOADED
-    callback?.call()
 }
 
 const addScriptObjects = (element, callback = null) => {
@@ -122,7 +132,8 @@ export class BetterDeferred {
     }
 
     next() {
-        let elem = this.getQueue()?.shift();
+        let queue = this.getQueue()
+        let elem = queue ? queue.shift() : null;
         if (!elem) {
             log('Complete', 1);
             return ;
